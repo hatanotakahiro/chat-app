@@ -5,6 +5,7 @@ class MessagesController < ApplicationController
 
     # ・paramsに含まれているチャットルームのレコード情報
     @room = Room.find(params[:room_id])
+    @messages = @room.messages.includes(:user).order("created_at DESC")
   end
   def create
     @room = Room.find(params[:room_id])
@@ -13,6 +14,8 @@ class MessagesController < ApplicationController
     if @message.save
       redirect_to room_messages_path(@room)
     else
+      # renderだと@messagesの情報がなくなるので必要
+      @messages = @room.messages.includes(:user)
       render :index
     end
   end
